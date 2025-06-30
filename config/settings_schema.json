@@ -1,0 +1,272 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Stellar Reverb",
+    "theme_version": "1.0.0",
+    "theme_author": "Stellar Reverb",
+    "theme_documentation_url": "",
+    "theme_support_url": ""
+  },
+  {
+    "name": "Cosmic Effects",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Cosmic Background Effects"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_cosmic_particles",
+        "label": "Enable cosmic particles",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_star_field",
+        "label": "Enable star field background",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_nebula_effects",
+        "label": "Enable nebula drift effects",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_scanlines",
+        "label": "Enable retro scanlines",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "particle_count",
+        "min": 10,
+        "max": 50,
+        "step": 5,
+        "unit": "particles",
+        "label": "Number of cosmic particles",
+        "default": 20
+      }
+    ]
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Cosmic Color Scheme"
+      },
+      {
+        "type": "color",
+        "id": "color_cosmic_cyan",
+        "label": "Cosmic Cyan",
+        "default": "#00ffff"
+      },
+      {
+        "type": "color",
+        "id": "color_cosmic_magenta",
+        "label": "Cosmic Magenta", 
+        "default": "#ff00ff"
+      },
+      {
+        "type": "color",
+        "id": "color_cosmic_purple",
+        "label": "Cosmic Purple",
+        "default": "#8a2be2"
+      },
+      {
+        "type": "color",
+        "id": "color_deep_space",
+        "label": "Deep Space Background",
+        "default": "#000000"
+      },
+      {
+        "type": "color",
+        "id": "color_nebula",
+        "label": "Nebula Accent",
+        "default": "#0f0524"
+      }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Cosmic Typography"
+      },
+      {
+        "type": "font_picker",
+        "id": "font_heading",
+        "label": "Heading font",
+        "default": "orbitron_n4"
+      },
+      {
+        "type": "font_picker", 
+        "id": "font_body",
+        "label": "Body font",
+        "default": "tomorrow_n4"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_glitch_text",
+        "label": "Enable glitch text effects",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Transmissions",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Transmission Collections"
+      },
+      {
+        "type": "collection",
+        "id": "transmission_001_collection",
+        "label": "Transmission 001: Event Horizon Collection"
+      },
+      {
+        "type": "collection",
+        "id": "transmission_002_collection", 
+        "label": "Transmission 002: Simulation Collection"
+      },
+      {
+        "type": "collection",
+        "id": "transmission_003_collection",
+        "label": "Transmission 003: Feedback Tower Collection"
+      },
+      {
+        "type": "collection",
+        "id": "transmission_004_collection",
+        "label": "Transmission 004: Machine Dreams Collection"
+      }
+    ]
+  },
+  {
+    "name": "Homepage",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Hero Section"
+      },
+      {
+        "type": "text",
+        "id": "hero_title",
+        "label": "Hero title",
+        "default": "STELLAR REVERB"
+      },
+      {
+        "type": "textarea",
+        "id": "hero_description",
+        "label": "Hero description",
+        "default": "Explore transmissions from the edge of time, where sound becomes story and cosmic dreams manifest as wearable mythology."
+      },
+      {
+        "type": "text",
+        "id": "hero_button_text",
+        "label": "Hero button text",
+        "default": "Explore Transmissions"
+      },
+      {
+        "type": "url",
+        "id": "hero_button_link",
+        "label": "Hero button link"
+      }
+    ]
+  },
+  {
+    "name": "Product Grid",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Transmission Grid Settings"
+      },
+      {
+        "type": "range",
+        "id": "products_per_row_desktop",
+        "min": 2,
+        "max": 4,
+        "step": 1,
+        "label": "Products per row (desktop)",
+        "default": 4
+      },
+      {
+        "type": "range",
+        "id": "products_per_row_mobile",
+        "min": 1,
+        "max": 2,
+        "step": 1,
+        "label": "Products per row (mobile)",
+        "default": 1
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_product_hover_effects",
+        "label": "Enable cosmic hover effects",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Cart",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Cosmic Cart Settings"
+      },
+      {
+        "type": "select",
+        "id": "cart_type",
+        "label": "Cart type",
+        "options": [
+          {
+            "value": "drawer",
+            "label": "Cosmic drawer"
+          },
+          {
+            "value": "page",
+            "label": "Full page"
+          }
+        ],
+        "default": "drawer"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_cart_cosmic_effects",
+        "label": "Enable cosmic cart effects",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Performance",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Performance Optimization"
+      },
+      {
+        "type": "checkbox",
+        "id": "reduce_motion_support",
+        "label": "Respect reduced motion preferences",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "lazy_load_images",
+        "label": "Enable lazy loading for images",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "optimize_for_mobile",
+        "label": "Optimize cosmic effects for mobile",
+        "default": true
+      }
+    ]
+  }
+]
+

@@ -1,0 +1,463 @@
+{% comment %}
+  Stellar Reverb - Email Capture Section
+  Cosmic newsletter signup with cosmic styling
+{% endcomment %}
+
+<section class="email-capture section">
+  <div class="container">
+    <div class="email-capture__content">
+      {% if section.settings.heading != blank %}
+        <h2 class="email-capture__heading glitch-text" data-text="{{ section.settings.heading }}">
+          {{ section.settings.heading }}
+        </h2>
+      {% endif %}
+      
+      {% if section.settings.description != blank %}
+        <p class="email-capture__description">
+          {{ section.settings.description }}
+        </p>
+      {% endif %}
+      
+      {% form 'customer', class: 'email-capture__form' %}
+        {% if form.posted_successfully? %}
+          <div class="email-capture__success">
+            <div class="success-icon">✨</div>
+            <h3>Welcome to the cosmic transmission!</h3>
+            <p>You've successfully joined our intergalactic newsletter. Prepare for otherworldly updates.</p>
+          </div>
+        {% else %}
+          <div class="email-form">
+            <div class="email-form__input-wrapper">
+              <input 
+                type="email" 
+                name="contact[email]" 
+                id="ContactEmail"
+                class="email-form__input"
+                placeholder="{{ section.settings.placeholder | default: 'Enter your cosmic coordinates...' }}"
+                required
+                aria-label="Email address"
+              >
+              <button type="submit" class="email-form__submit btn btn--primary">
+                {{ section.settings.button_text | default: 'Join Transmission' }}
+              </button>
+            </div>
+            
+            {% if form.errors %}
+              <div class="email-capture__errors">
+                {% for error in form.errors %}
+                  <p class="error-message">{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+            
+            <input type="hidden" name="contact[tags]" value="newsletter,cosmic-transmission">
+            
+            {% if section.settings.show_privacy_text %}
+              <p class="email-capture__privacy">
+                {{ section.settings.privacy_text | default: 'We respect your privacy. Unsubscribe at any time.' }}
+              </p>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endform %}
+      
+      {% if section.settings.show_social_proof %}
+        <div class="email-capture__social-proof">
+          <p class="social-proof__text">
+            Join {{ section.settings.subscriber_count | default: '1,000+' }} cosmic travelers already receiving transmissions
+          </p>
+        </div>
+      {% endif %}
+    </div>
+    
+    {% if section.settings.background_image != blank %}
+      <div class="email-capture__background">
+        <img 
+          src="{{ section.settings.background_image | image_url: width: 1200 }}"
+          alt="Cosmic background"
+          loading="lazy"
+        >
+      </div>
+    {% endif %}
+  </div>
+  
+  {% render 'cosmic-effects' %}
+</section>
+
+{% schema %}
+{
+  "name": "Email Capture",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Join the Cosmic Transmission"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Be the first to receive updates on new transmissions, exclusive drops, and cosmic mythology from the edge of time."
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Email placeholder text",
+      "default": "Enter your cosmic coordinates..."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Join Transmission"
+    },
+    {
+      "type": "header",
+      "content": "Privacy & Social Proof"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_privacy_text",
+      "label": "Show privacy text",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "privacy_text",
+      "label": "Privacy text",
+      "default": "We respect your privacy. Unsubscribe at any time."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_social_proof",
+      "label": "Show social proof",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "subscriber_count",
+      "label": "Subscriber count",
+      "default": "1,000+"
+    },
+    {
+      "type": "header",
+      "content": "Design"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image (optional)"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#0f0524"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Section padding top",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Section padding bottom",
+      "default": 80
+    }
+  ],
+  "presets": [
+    {
+      "name": "Email Capture",
+      "settings": {
+        "heading": "Join the Cosmic Transmission",
+        "description": "Be the first to receive updates on new transmissions, exclusive drops, and cosmic mythology from the edge of time.",
+        "placeholder": "Enter your cosmic coordinates...",
+        "button_text": "Join Transmission",
+        "show_privacy_text": true,
+        "show_social_proof": true,
+        "subscriber_count": "1,000+"
+      }
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  .email-capture {
+    background: {{ section.settings.background_color | default: '#0f0524' }};
+    padding: {{ section.settings.section_padding_top }}px 0 {{ section.settings.section_padding_bottom }}px;
+    position: relative;
+    text-align: center;
+    overflow: hidden;
+  }
+  
+  {% if section.settings.background_image != blank %}
+  .email-capture__background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+  
+  .email-capture__background img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.3;
+  }
+  {% endif %}
+  
+  .email-capture__content {
+    position: relative;
+    z-index: 2;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .email-capture__heading {
+    color: var(--color-cosmic-cyan);
+    text-shadow: var(--glow-cyan);
+    margin-bottom: 1.5rem;
+    font-size: clamp(2rem, 5vw, 3rem);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  
+  .email-capture__description {
+    color: var(--color-gray);
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    line-height: 1.6;
+    margin-bottom: 3rem;
+  }
+  
+  .email-form {
+    margin-bottom: 2rem;
+  }
+  
+  .email-form__input-wrapper {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .email-form__input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--color-cosmic-cyan);
+    border-radius: var(--border-radius);
+    color: var(--color-white);
+    font-family: var(--font-body-family);
+    font-size: 1rem;
+    transition: all var(--transition-speed) ease;
+  }
+  
+  .email-form__input:focus {
+    outline: none;
+    border-color: var(--color-cosmic-magenta);
+    box-shadow: var(--glow-magenta);
+    background: rgba(255, 255, 255, 0.15);
+  }
+  
+  .email-form__input::placeholder {
+    color: var(--color-gray);
+  }
+  
+  .email-form__submit {
+    white-space: nowrap;
+    padding: 1rem 2rem;
+  }
+  
+  .email-capture__errors {
+    margin-bottom: 1rem;
+  }
+  
+  .error-message {
+    color: var(--color-error);
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .email-capture__privacy {
+    color: var(--color-gray);
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+  
+  .email-capture__success {
+    background: rgba(0, 255, 0, 0.1);
+    border: 1px solid var(--color-success);
+    border-radius: var(--border-radius);
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+  
+  .success-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    animation: pulse var(--pulse-duration) ease-in-out infinite alternate;
+  }
+  
+  .email-capture__success h3 {
+    color: var(--color-cosmic-cyan);
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .email-capture__success p {
+    color: var(--color-gray);
+    margin: 0;
+  }
+  
+  .email-capture__social-proof {
+    border-top: 1px solid rgba(0, 255, 255, 0.3);
+    padding-top: 2rem;
+  }
+  
+  .social-proof__text {
+    color: var(--color-cosmic-magenta);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0;
+  }
+  
+  @media (max-width: 768px) {
+    .email-form__input-wrapper {
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .email-form__submit {
+      width: 100%;
+    }
+    
+    .email-capture__content {
+      padding: 0 1rem;
+    }
+  }
+  
+  /* Enhanced cosmic effects for email capture */
+  .email-capture::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+      radial-gradient(circle at 20% 20%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
+    z-index: 1;
+    animation: cosmic-drift var(--cosmic-drift-duration) ease-in-out infinite alternate;
+  }
+  
+  .email-capture::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(138, 43, 226, 0.2) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    animation: pulse var(--pulse-duration) ease-in-out infinite alternate;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const emailForm = document.querySelector('.email-capture__form');
+    const emailInput = document.querySelector('.email-form__input');
+    const submitButton = document.querySelector('.email-form__submit');
+    
+    if (emailForm && emailInput && submitButton) {
+      // Enhanced form validation
+      emailInput.addEventListener('input', function() {
+        const email = this.value.trim();
+        const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        
+        if (email.length > 0) {
+          if (isValid) {
+            this.style.borderColor = 'var(--color-cosmic-cyan)';
+            submitButton.disabled = false;
+          } else {
+            this.style.borderColor = 'var(--color-error)';
+            submitButton.disabled = true;
+          }
+        } else {
+          this.style.borderColor = 'var(--color-cosmic-cyan)';
+          submitButton.disabled = false;
+        }
+      });
+      
+      // Form submission with cosmic effects
+      emailForm.addEventListener('submit', function(e) {
+        const originalText = submitButton.textContent;
+        submitButton.textContent = 'Transmitting...';
+        submitButton.disabled = true;
+        
+        // Create particle burst effect
+        if (window.stellarReverbTheme) {
+          window.stellarReverbTheme.createParticleBurst(submitButton);
+        }
+        
+        // Reset button after a delay if form doesn't redirect
+        setTimeout(() => {
+          if (submitButton) {
+            submitButton.textContent = originalText;
+            submitButton.disabled = false;
+          }
+        }, 3000);
+      });
+      
+      // Add cosmic glow on focus
+      emailInput.addEventListener('focus', function() {
+        this.style.boxShadow = 'var(--glow-cyan)';
+      });
+      
+      emailInput.addEventListener('blur', function() {
+        this.style.boxShadow = '';
+      });
+    }
+    
+    // Animate success message
+    const successMessage = document.querySelector('.email-capture__success');
+    if (successMessage) {
+      successMessage.style.opacity = '0';
+      successMessage.style.transform = 'translateY(20px)';
+      
+      setTimeout(() => {
+        successMessage.style.transition = 'all 0.8s ease';
+        successMessage.style.opacity = '1';
+        successMessage.style.transform = 'translateY(0)';
+      }, 100);
+    }
+  });
+</script>
+

@@ -1,0 +1,278 @@
+{% comment %}
+  Stellar Reverb - Product Card Snippet
+  Reusable product card with cosmic styling
+  
+  Accepts:
+  - product: product object
+  - show_vendor: boolean
+  - show_quick_view: boolean
+  - card_class: additional CSS classes
+{% endcomment %}
+
+{% assign show_vendor = show_vendor | default: false %}
+{% assign show_quick_view = show_quick_view | default: true %}
+{% assign card_class = card_class | default: '' %}
+
+<div class="product-card {{ card_class }}" data-product-id="{{ product.id }}">
+  <div class="product-card__image-wrapper">
+    {% if product.featured_image != blank %}
+      <a href="{{ product.url }}" class="product-card__image-link">
+        <img 
+          src="{{ product.featured_image | image_url: width: 600 }}"
+          alt="{{ product.featured_image.alt | escape }}"
+          class="product-card__image"
+          loading="lazy"
+          width="600"
+          height="400"
+        >
+      </a>
+    {% else %}
+      <div class="product-card__image-placeholder">
+        <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100" height="100" fill="var(--color-cosmic-purple)" opacity="0.1"/>
+          <path d="M30 40L50 20L70 40V70H30V40Z" stroke="var(--color-cosmic-cyan)" stroke-width="2" fill="none"/>
+          <circle cx="40" cy="35" r="3" fill="var(--color-cosmic-magenta)"/>
+        </svg>
+      </div>
+    {% endif %}
+    
+    {% comment %} Product badges {% endcomment %}
+    {% if product.compare_at_price > product.price %}
+      <div class="product-card__badge product-card__badge--sale">
+        Sale
+      </div>
+    {% elsif product.available == false %}
+      <div class="product-card__badge product-card__badge--sold-out">
+        Sold Out
+      </div>
+    {% elsif product.tags contains 'new' %}
+      <div class="product-card__badge product-card__badge--new">
+        New
+      </div>
+    {% endif %}
+    
+    {% comment %} Quick view button {% endcomment %}
+    {% if show_quick_view %}
+      <button 
+        class="product-card__quick-view btn btn--secondary"
+        data-quick-view="{{ product.handle }}"
+        aria-label="Quick view {{ product.title }}"
+      >
+        Quick View
+      </button>
+    {% endif %}
+  </div>
+  
+  <div class="product-card__content">
+    {% if show_vendor and product.vendor != blank %}
+      <p class="product-card__vendor">{{ product.vendor }}</p>
+    {% endif %}
+    
+    <h3 class="product-card__title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+    
+    {% if product.description != blank %}
+      <p class="product-card__description">
+        {{ product.description | strip_html | truncate: 100 }}
+      </p>
+    {% endif %}
+    
+    <div class="product-card__price-wrapper">
+      {% if product.compare_at_price > product.price %}
+        <span class="product-card__price product-card__price--sale">
+          {{ product.price | money }}
+        </span>
+        <span class="product-card__price product-card__price--compare">
+          {{ product.compare_at_price | money }}
+        </span>
+      {% else %}
+        <span class="product-card__price">
+          {% if product.price_varies %}
+            From {{ product.price_min | money }}
+          {% else %}
+            {{ product.price | money }}
+          {% endif %}
+        </span>
+      {% endif %}
+    </div>
+    
+    {% comment %} Add to cart form {% endcomment %}
+    {% if product.available %}
+      {% if product.variants.size == 1 %}
+        <form action="/cart/add" method="post" enctype="multipart/form-data" data-product-form>
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+          <button 
+            type="submit" 
+            class="btn btn--primary product-card__add-to-cart"
+            {% unless product.selected_or_first_available_variant.available %}disabled{% endunless %}
+          >
+            {% if product.selected_or_first_available_variant.available %}
+              Add to Cosmic Cart
+            {% else %}
+              Sold Out
+            {% endif %}
+          </button>
+        </form>
+      {% else %}
+        <a href="{{ product.url }}" class="btn btn--primary">
+          Choose Options
+        </a>
+      {% endif %}
+    {% else %}
+      <button class="btn btn--primary" disabled>
+        Sold Out
+      </button>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  .product-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    text-align: center;
+    transition: all var(--transition-speed) ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .product-card__image-wrapper {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  
+  .product-card__image,
+  .product-card__image-placeholder {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+    transition: all var(--transition-speed) ease;
+  }
+  
+  .product-card__image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(138, 43, 226, 0.1);
+    border: 1px dashed var(--color-cosmic-purple);
+  }
+  
+  .product-card__badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    z-index: 2;
+  }
+  
+  .product-card__badge--sale {
+    background: var(--color-cosmic-magenta);
+    color: var(--color-white);
+  }
+  
+  .product-card__badge--sold-out {
+    background: var(--color-dark-gray);
+    color: var(--color-gray);
+  }
+  
+  .product-card__badge--new {
+    background: var(--color-cosmic-cyan);
+    color: var(--color-deep-space);
+  }
+  
+  .product-card__quick-view {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: all var(--transition-speed) ease;
+    z-index: 2;
+  }
+  
+  .product-card:hover .product-card__quick-view {
+    opacity: 1;
+  }
+  
+  .product-card__vendor {
+    font-size: 0.875rem;
+    color: var(--color-gray);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .product-card__title {
+    color: var(--color-cosmic-cyan);
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .product-card__title a {
+    color: inherit;
+    text-decoration: none;
+    transition: all var(--transition-speed) ease;
+  }
+  
+  .product-card__title a:hover {
+    color: var(--color-cosmic-magenta);
+    text-shadow: var(--glow-magenta);
+  }
+  
+  .product-card__description {
+    color: var(--color-gray);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+  
+  .product-card__price-wrapper {
+    margin-bottom: 1.5rem;
+  }
+  
+  .product-card__price {
+    color: var(--color-cosmic-magenta);
+    font-family: var(--font-heading-family);
+    font-weight: 700;
+    font-size: 1.125rem;
+  }
+  
+  .product-card__price--sale {
+    color: var(--color-cosmic-cyan);
+  }
+  
+  .product-card__price--compare {
+    color: var(--color-gray);
+    text-decoration: line-through;
+    font-size: 1rem;
+    margin-left: 0.5rem;
+  }
+  
+  .product-card__add-to-cart {
+    width: 100%;
+  }
+  
+  {% if settings.enable_product_hover_effects %}
+  .product-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: var(--color-cosmic-cyan);
+    box-shadow: 0 20px 40px rgba(0, 255, 255, 0.3);
+  }
+  
+  .product-card:hover .product-card__image {
+    filter: brightness(1.2) contrast(1.1);
+  }
+  {% endif %}
+</style>
+

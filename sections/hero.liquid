@@ -1,0 +1,146 @@
+{% comment %}
+  Stellar Reverb - Hero Section
+  Cosmic homepage hero with glitch effects
+{% endcomment %}
+
+<section class="hero section--hero">
+  <div class="container">
+    <div class="hero__content">
+      {% if section.settings.show_badge %}
+        <div class="hero__badge">
+          {{ section.settings.badge_text | default: 'Mythic Transmissions' }}
+        </div>
+      {% endif %}
+      
+      <h1 class="hero__title glitch-text" data-text="{{ section.settings.hero_title | default: settings.hero_title }}">
+        {{ section.settings.hero_title | default: settings.hero_title }}
+      </h1>
+      
+      {% if section.settings.hero_description != blank %}
+        <p class="hero__description">
+          {{ section.settings.hero_description | default: settings.hero_description }}
+        </p>
+      {% endif %}
+      
+      {% if section.settings.hero_button_text != blank %}
+        <a href="{{ section.settings.hero_button_link | default: '/collections/all' }}" class="btn btn--primary">
+          {{ section.settings.hero_button_text | default: settings.hero_button_text }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+  
+  {% comment %} Cosmic background elements {% endcomment %}
+  {% if settings.enable_cosmic_particles %}
+    {% render 'cosmic-effects' %}
+  {% endif %}
+</section>
+
+{% schema %}
+{
+  "name": "Hero Section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Hero Content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge",
+      "label": "Show cosmic badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge text",
+      "default": "Mythic Transmissions"
+    },
+    {
+      "type": "text",
+      "id": "hero_title",
+      "label": "Hero title",
+      "default": "STELLAR REVERB"
+    },
+    {
+      "type": "textarea",
+      "id": "hero_description",
+      "label": "Hero description",
+      "default": "Explore transmissions from the edge of time, where sound becomes story and cosmic dreams manifest as wearable mythology."
+    },
+    {
+      "type": "text",
+      "id": "hero_button_text",
+      "label": "Button text",
+      "default": "Explore Transmissions"
+    },
+    {
+      "type": "url",
+      "id": "hero_button_link",
+      "label": "Button link",
+      "default": "/collections/all"
+    },
+    {
+      "type": "header",
+      "content": "Background Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image (optional)"
+    },
+    {
+      "type": "range",
+      "id": "background_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "unit": "%",
+      "label": "Background opacity",
+      "default": 30
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Section",
+      "settings": {
+        "show_badge": true,
+        "badge_text": "Mythic Transmissions",
+        "hero_title": "STELLAR REVERB",
+        "hero_description": "Explore transmissions from the edge of time, where sound becomes story and cosmic dreams manifest as wearable mythology.",
+        "hero_button_text": "Explore Transmissions",
+        "hero_button_link": "/collections/all"
+      }
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  {% if section.settings.background_image != blank %}
+    .hero {
+      background-image: url('{{ section.settings.background_image | image_url: width: 1920 }}');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+    }
+    
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, {{ section.settings.background_opacity | divided_by: 100.0 }});
+      z-index: 1;
+    }
+    
+    .hero__content {
+      position: relative;
+      z-index: 2;
+    }
+  {% endif %}
+</style>
+

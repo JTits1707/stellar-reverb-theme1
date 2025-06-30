@@ -1,0 +1,294 @@
+{% comment %}
+  Stellar Reverb - Transmission Grid Section
+  Showcase transmission capsule collections
+{% endcomment %}
+
+<section class="transmission-grid section">
+  <div class="container">
+    {% if section.settings.heading != blank %}
+      <h2 class="section__heading text-center glitch-text" data-text="{{ section.settings.heading }}">
+        {{ section.settings.heading }}
+      </h2>
+    {% endif %}
+    
+    {% if section.settings.description != blank %}
+      <p class="section__description text-center">
+        {{ section.settings.description }}
+      </p>
+    {% endif %}
+    
+    <div class="product-grid">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'transmission_collection' %}
+            {% assign collection = collections[block.settings.collection] %}
+            {% if collection != blank %}
+              <div class="product-card transmission-card" {{ block.shopify_attributes }}>
+                {% if collection.featured_image != blank %}
+                  <div class="product-card__image-wrapper">
+                    <img 
+                      src="{{ collection.featured_image | image_url: width: 600 }}"
+                      alt="{{ collection.title }}"
+                      class="product-card__image"
+                      loading="lazy"
+                      width="600"
+                      height="400"
+                    >
+                  </div>
+                {% elsif collection.products.first.featured_image != blank %}
+                  <div class="product-card__image-wrapper">
+                    <img 
+                      src="{{ collection.products.first.featured_image | image_url: width: 600 }}"
+                      alt="{{ collection.title }}"
+                      class="product-card__image"
+                      loading="lazy"
+                      width="600"
+                      height="400"
+                    >
+                  </div>
+                {% endif %}
+                
+                {% if block.settings.badge_text != blank %}
+                  <div class="product-card__badge">
+                    {{ block.settings.badge_text }}
+                  </div>
+                {% endif %}
+                
+                <div class="product-card__content">
+                  <h3 class="product-card__title">
+                    <a href="{{ collection.url }}">{{ collection.title }}</a>
+                  </h3>
+                  
+                  {% if block.settings.custom_description != blank %}
+                    <p class="product-card__description">
+                      {{ block.settings.custom_description }}
+                    </p>
+                  {% elsif collection.description != blank %}
+                    <p class="product-card__description">
+                      {{ collection.description | strip_html | truncate: 120 }}
+                    </p>
+                  {% endif %}
+                  
+                  <div class="product-card__meta">
+                    {% if collection.products_count > 0 %}
+                      <span class="product-card__count">
+                        {{ collection.products_count }} 
+                        {% if collection.products_count == 1 %}item{% else %}items{% endif %}
+                      </span>
+                    {% endif %}
+                    
+                    {% if collection.products.first.price %}
+                      <span class="product-card__price">
+                        From {{ collection.products.first.price | money }}
+                      </span>
+                    {% endif %}
+                  </div>
+                  
+                  <a href="{{ collection.url }}" class="btn btn--secondary">
+                    {{ block.settings.button_text | default: 'Explore Transmission' }}
+                  </a>
+                </div>
+              </div>
+            {% endif %}
+            
+          {% when 'featured_product' %}
+            {% assign product = all_products[block.settings.product] %}
+            {% if product != blank %}
+              {% render 'product-card', product: product, show_vendor: false %}
+            {% endif %}
+        {% endcase %}
+      {% endfor %}
+    </div>
+    
+    {% if section.settings.show_view_all %}
+      <div class="section__footer text-center">
+        <a href="{{ section.settings.view_all_link | default: '/collections/all' }}" class="btn btn--primary">
+          {{ section.settings.view_all_text | default: 'View All Transmissions' }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Transmission Grid",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Current Transmissions"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "header",
+      "content": "View All Button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show view all button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "View all button text",
+      "default": "View All Transmissions"
+    },
+    {
+      "type": "url",
+      "id": "view_all_link",
+      "label": "View all button link",
+      "default": "/collections/all"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "transmission_collection",
+      "name": "Transmission Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "badge_text",
+          "label": "Badge text (e.g., TRANSMISSION 001)"
+        },
+        {
+          "type": "textarea",
+          "id": "custom_description",
+          "label": "Custom description (optional)",
+          "info": "Leave blank to use collection description"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button text",
+          "default": "Explore Transmission"
+        }
+      ]
+    },
+    {
+      "type": "featured_product",
+      "name": "Featured Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Transmission Grid",
+      "settings": {
+        "heading": "Current Transmissions",
+        "show_view_all": true,
+        "view_all_text": "View All Transmissions",
+        "view_all_link": "/collections/all"
+      },
+      "blocks": [
+        {
+          "type": "transmission_collection",
+          "settings": {
+            "badge_text": "TRANSMISSION 001",
+            "button_text": "Explore Transmission"
+          }
+        },
+        {
+          "type": "transmission_collection",
+          "settings": {
+            "badge_text": "TRANSMISSION 002",
+            "button_text": "Explore Transmission"
+          }
+        },
+        {
+          "type": "transmission_collection",
+          "settings": {
+            "badge_text": "TRANSMISSION 003",
+            "button_text": "Explore Transmission"
+          }
+        },
+        {
+          "type": "transmission_collection",
+          "settings": {
+            "badge_text": "TRANSMISSION 004",
+            "button_text": "Explore Transmission"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  .transmission-card {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .transmission-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      45deg,
+      transparent 30%,
+      rgba(0, 255, 255, 0.1) 50%,
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+  
+  .transmission-card:hover::before {
+    opacity: 1;
+  }
+  
+  .product-card__image-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+  
+  .product-card__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    color: var(--color-gray);
+  }
+  
+  .product-card__count {
+    color: var(--color-cosmic-cyan);
+  }
+  
+  .product-card__price {
+    color: var(--color-cosmic-magenta);
+    font-weight: 700;
+  }
+</style>
+

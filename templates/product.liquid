@@ -1,0 +1,1032 @@
+{% comment %}
+  Stellar Reverb - Product Template
+  Individual product page with cosmic styling and e-commerce functionality
+{% endcomment %}
+
+<div class="product-page">
+  <div class="container">
+    <div class="product">
+      {% comment %} Product Images {% endcomment %}
+      <div class="product__media">
+        <div class="product__images">
+          {% if product.images.size > 0 %}
+            <div class="product__main-image">
+              <img 
+                id="ProductMainImage"
+                src="{{ product.featured_image | image_url: width: 800 }}"
+                alt="{{ product.featured_image.alt | escape }}"
+                class="product__image"
+                width="800"
+                height="800"
+              >
+              
+              {% comment %} Image zoom overlay {% endcomment %}
+              <div class="product__zoom-overlay" id="ImageZoomOverlay">
+                <span class="product__zoom-text">Click to zoom</span>
+              </div>
+            </div>
+            
+            {% if product.images.size > 1 %}
+              <div class="product__thumbnails">
+                {% for image in product.images limit: 6 %}
+                  <button 
+                    type="button"
+                    class="product__thumbnail{% if forloop.first %} product__thumbnail--active{% endif %}"
+                    data-image-src="{{ image | image_url: width: 800 }}"
+                    data-image-alt="{{ image.alt | escape }}"
+                  >
+                    <img 
+                      src="{{ image | image_url: width: 150 }}"
+                      alt="{{ image.alt | escape }}"
+                      width="150"
+                      height="150"
+                    >
+                  </button>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% else %}
+            <div class="product__image-placeholder">
+              <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="200" height="200" fill="var(--color-cosmic-purple)" opacity="0.1"/>
+                <path d="M100 60L120 90H110V120H90V90H80L100 60Z" fill="var(--color-cosmic-cyan)" opacity="0.5"/>
+              </svg>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      
+      {% comment %} Product Information {% endcomment %}
+      <div class="product__info">
+        {% comment %} Product badges {% endcomment %}
+        <div class="product__badges">
+          {% if product.compare_at_price > product.price %}
+            <span class="product__badge product__badge--sale">Sale</span>
+          {% endif %}
+          
+          {% unless product.available %}
+            <span class="product__badge product__badge--sold-out">Sold Out</span>
+          {% endunless %}
+          
+          {% if product.tags contains 'new' %}
+            <span class="product__badge product__badge--new">New</span>
+          {% endif %}
+          
+          {% if product.tags contains 'limited' %}
+            <span class="product__badge product__badge--limited">Limited Edition</span>
+          {% endif %}
+        </div>
+        
+        {% comment %} Product title and vendor {% endcomment %}
+        {% if product.vendor != blank and product.vendor != 'Stellar Reverb' %}
+          <div class="product__vendor">{{ product.vendor }}</div>
+        {% endif %}
+        
+        <h1 class="product__title glitch-text" data-text="{{ product.title }}">
+          {{ product.title }}
+        </h1>
+        
+        {% comment %} Product price {% endcomment %}
+        <div class="product__price" id="ProductPrice">
+          {% if product.compare_at_price > product.price %}
+            <span class="product__price--compare">
+              {{ product.compare_at_price | money }}
+            </span>
+          {% endif %}
+          
+          <span class="product__price--current{% if product.compare_at_price > product.price %} product__price--sale{% endif %}">
+            {% if product.price_varies %}
+              From {{ product.price_min | money }}
+            {% else %}
+              {{ product.price | money }}
+            {% endif %}
+          </span>
+          
+          {% if product.compare_at_price > product.price %}
+            {% assign savings = product.compare_at_price | minus: product.price %}
+            {% assign savings_percent = savings | times: 100 | divided_by: product.compare_at_price %}
+            <span class="product__savings">
+              Save {{ savings_percent }}% ({{ savings | money }})
+            </span>
+          {% endif %}
+        </div>
+        
+        {% comment %} Product description {% endcomment %}
+        {% if product.description != blank %}
+          <div class="product__description">
+            {{ product.description }}
+          </div>
+        {% endif %}
+        
+        {% comment %} Product form {% endcomment %}
+        <form action="/cart/add" method="post" enctype="multipart/form-data" class="product__form" data-product-form>
+          {% comment %} Variant selector {% endcomment %}
+          {% unless product.has_only_default_variant %}
+            <div class="product__variants" id="ProductVariants">
+              {% for option in product.options_with_values %}
+                <div class="product__option">
+                  <label class="product__option-label">
+                    {{ option.name }}
+                  </label>
+                  
+                  {% if option.name == 'Color' or option.name == 'Colour' %}
+                    <div class="product__color-options">
+                      {% for value in option.values %}
+                        {% assign variant = product.variants | where: option.name, value | first %}
+                        <input 
+                          type="radio" 
+                          id="Option-{{ option.name }}-{{ forloop.index }}"
+                          name="options[{{ option.name }}]"
+                          value="{{ value | escape }}"
+                          class="product__color-input visually-hidden"
+                          {% if forloop.first %}checked{% endif %}
+                        >
+                        <label 
+                          for="Option-{{ option.name }}-{{ forloop.index }}"
+                          class="product__color-label"
+                          style="background-color: {{ value | handle }};"
+                          title="{{ value }}"
+                          {% if variant.featured_image %}
+                            data-variant-image="{{ variant.featured_image | image_url: width: 800 }}"
+                          {% endif %}
+                        >
+                          <span class="visually-hidden">{{ value }}</span>
+                        </label>
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    <select 
+                      name="options[{{ option.name }}]"
+                      id="Option-{{ option.name }}"
+                      class="product__select"
+                    >
+                      {% for value in option.values %}
+                        <option value="{{ value | escape }}">{{ value }}</option>
+                      {% endfor %}
+                    </select>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+          {% endunless %}
+          
+          {% comment %} Quantity selector {% endcomment %}
+          <div class="product__quantity">
+            <label for="Quantity" class="product__quantity-label">Quantity</label>
+            <div class="quantity-selector">
+              <button type="button" class="quantity__button quantity__button--minus" aria-label="Decrease quantity">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M4 8h8v1H4V8z"/>
+                </svg>
+              </button>
+              <input 
+                type="number" 
+                id="Quantity"
+                name="quantity"
+                value="1"
+                min="1"
+                class="quantity__input"
+                aria-label="Product quantity"
+              >
+              <button type="button" class="quantity__button quantity__button--plus" aria-label="Increase quantity">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M8 4v8M4 8h8" stroke="currentColor" stroke-width="1" fill="none"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          {% comment %} Hidden variant ID input {% endcomment %}
+          <input type="hidden" name="id" id="ProductVariantId" value="{{ product.selected_or_first_available_variant.id }}">
+          
+          {% comment %} Add to cart button {% endcomment %}
+          <div class="product__buttons">
+            <button 
+              type="submit" 
+              class="btn btn--primary btn--large product__add-to-cart"
+              {% unless product.available %}disabled{% endunless %}
+              data-add-to-cart="{{ product.available }}"
+              data-sold-out="Sold Out"
+            >
+              <span class="btn__text">
+                {% if product.available %}
+                  Add to Cosmic Cart
+                {% else %}
+                  Sold Out
+                {% endif %}
+              </span>
+              <span class="btn__loading loading" style="display: none;"></span>
+            </button>
+            
+            {% comment %} Buy now button (if enabled) {% endcomment %}
+            {% if settings.show_dynamic_checkout %}
+              {{ form | payment_button }}
+            {% endif %}
+          </div>
+        </form>
+        
+        {% comment %} Product meta information {% endcomment %}
+        <div class="product__meta">
+          {% if product.sku != blank %}
+            <div class="product__meta-item">
+              <span class="product__meta-label">SKU:</span>
+              <span class="product__meta-value" id="ProductSku">{{ product.selected_or_first_available_variant.sku }}</span>
+            </div>
+          {% endif %}
+          
+          {% if product.type != blank %}
+            <div class="product__meta-item">
+              <span class="product__meta-label">Type:</span>
+              <span class="product__meta-value">{{ product.type }}</span>
+            </div>
+          {% endif %}
+          
+          {% if product.tags.size > 0 %}
+            <div class="product__meta-item">
+              <span class="product__meta-label">Tags:</span>
+              <div class="product__tags">
+                {% for tag in product.tags limit: 5 %}
+                  <span class="product__tag">{{ tag }}</span>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+        
+        {% comment %} Share buttons {% endcomment %}
+        <div class="product__share">
+          <span class="product__share-label">Share this transmission:</span>
+          <div class="product__share-buttons">
+            <a 
+              href="https://twitter.com/intent/tweet?text={{ product.title | url_encode }}&url={{ shop.url }}{{ product.url }}"
+              target="_blank"
+              class="product__share-button"
+              aria-label="Share on Twitter"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/>
+              </svg>
+            </a>
+            
+            <a 
+              href="https://www.facebook.com/sharer/sharer.php?u={{ shop.url }}{{ product.url }}"
+              target="_blank"
+              class="product__share-button"
+              aria-label="Share on Facebook"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
+              </svg>
+            </a>
+            
+            <button 
+              type="button"
+              class="product__share-button"
+              onclick="navigator.share ? navigator.share({title: '{{ product.title }}', url: '{{ shop.url }}{{ product.url }}'}) : navigator.clipboard.writeText('{{ shop.url }}{{ product.url }}')"
+              aria-label="Copy link"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+                <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    {% comment %} Product tabs/accordion {% endcomment %}
+    <div class="product__details">
+      <div class="product__tabs">
+        {% if product.description != blank %}
+          <div class="product__tab">
+            <button type="button" class="product__tab-button product__tab-button--active" data-tab="description">
+              Description
+            </button>
+            <div class="product__tab-content product__tab-content--active" id="tab-description">
+              {{ product.description }}
+            </div>
+          </div>
+        {% endif %}
+        
+        {% comment %} Size guide tab {% endcomment %}
+        <div class="product__tab">
+          <button type="button" class="product__tab-button" data-tab="size-guide">
+            Size Guide
+          </button>
+          <div class="product__tab-content" id="tab-size-guide">
+            <div class="size-guide">
+              <h3>Cosmic Sizing Chart</h3>
+              <table class="size-guide__table">
+                <thead>
+                  <tr>
+                    <th>Size</th>
+                    <th>Chest (inches)</th>
+                    <th>Length (inches)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>S</td>
+                    <td>34-36</td>
+                    <td>27</td>
+                  </tr>
+                  <tr>
+                    <td>M</td>
+                    <td>38-40</td>
+                    <td>28</td>
+                  </tr>
+                  <tr>
+                    <td>L</td>
+                    <td>42-44</td>
+                    <td>29</td>
+                  </tr>
+                  <tr>
+                    <td>XL</td>
+                    <td>46-48</td>
+                    <td>30</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        {% comment %} Shipping tab {% endcomment %}
+        <div class="product__tab">
+          <button type="button" class="product__tab-button" data-tab="shipping">
+            Shipping & Returns
+          </button>
+          <div class="product__tab-content" id="tab-shipping">
+            <div class="shipping-info">
+              <h3>Cosmic Delivery</h3>
+              <ul>
+                <li>Free shipping on orders over $75</li>
+                <li>Standard delivery: 3-5 business days</li>
+                <li>Express delivery: 1-2 business days</li>
+                <li>International shipping available</li>
+              </ul>
+              
+              <h3>Returns & Exchanges</h3>
+              <ul>
+                <li>30-day return policy</li>
+                <li>Items must be unworn and in original packaging</li>
+                <li>Free returns for defective items</li>
+                <li>Exchange for different size available</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  {% comment %} Related products {% endcomment %}
+  {% if collections[product.collections.first.handle].products.size > 1 %}
+    <section class="related-products section">
+      <div class="container">
+        <h2 class="section__heading text-center">More from this Transmission</h2>
+        
+        <div class="product-grid related-products__grid">
+          {% assign related_products = collections[product.collections.first.handle].products | where_not: 'id', product.id %}
+          {% for related_product in related_products limit: 4 %}
+            {% render 'product-card', 
+              product: related_product, 
+              show_vendor: false, 
+              show_quick_view: true 
+            %}
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+</div>
+
+{% comment %} Product JSON for JavaScript {% endcomment %}
+<script type="application/json" id="ProductJson">
+  {{ product | json }}
+</script>
+
+<script type="application/json" id="ProductVariants">
+  {{ product.variants | json }}
+</script>
+
+<style>
+  .product {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    margin-bottom: 4rem;
+  }
+  
+  .product__main-image {
+    position: relative;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    border-radius: var(--border-radius);
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .product__image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform var(--transition-speed) ease;
+  }
+  
+  .product__zoom-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity var(--transition-speed) ease;
+    cursor: zoom-in;
+  }
+  
+  .product__main-image:hover .product__zoom-overlay {
+    opacity: 1;
+  }
+  
+  .product__zoom-text {
+    color: var(--color-white);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .product__thumbnails {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 0.5rem;
+  }
+  
+  .product__thumbnail {
+    border: 2px solid transparent;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    background: none;
+    padding: 0;
+  }
+  
+  .product__thumbnail--active,
+  .product__thumbnail:hover {
+    border-color: var(--color-cosmic-cyan);
+    box-shadow: var(--glow-cyan);
+  }
+  
+  .product__thumbnail img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  
+  .product__image-placeholder {
+    width: 100%;
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(138, 43, 226, 0.1);
+    border-radius: var(--border-radius);
+  }
+  
+  .product__badges {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .product__badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .product__badge--sale {
+    background: var(--color-cosmic-magenta);
+    color: var(--color-white);
+  }
+  
+  .product__badge--sold-out {
+    background: var(--color-dark-gray);
+    color: var(--color-white);
+  }
+  
+  .product__badge--new {
+    background: var(--color-cosmic-cyan);
+    color: var(--color-deep-space);
+  }
+  
+  .product__badge--limited {
+    background: var(--color-cosmic-purple);
+    color: var(--color-white);
+  }
+  
+  .product__vendor {
+    color: var(--color-gray);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+  
+  .product__title {
+    color: var(--color-cosmic-cyan);
+    margin-bottom: 1.5rem;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+  }
+  
+  .product__price {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+  
+  .product__price--compare {
+    color: var(--color-gray);
+    text-decoration: line-through;
+    font-size: 1.125rem;
+  }
+  
+  .product__price--current {
+    color: var(--color-cosmic-magenta);
+    font-family: var(--font-heading-family);
+    font-weight: 700;
+    font-size: 1.5rem;
+  }
+  
+  .product__price--sale {
+    color: var(--color-cosmic-cyan);
+  }
+  
+  .product__savings {
+    background: var(--color-cosmic-magenta);
+    color: var(--color-white);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  
+  .product__description {
+    color: var(--color-gray);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+  
+  .product__option {
+    margin-bottom: 1.5rem;
+  }
+  
+  .product__option-label {
+    display: block;
+    color: var(--color-white);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .product__color-options {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  
+  .product__color-label {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    position: relative;
+  }
+  
+  .product__color-input:checked + .product__color-label {
+    border-color: var(--color-cosmic-cyan);
+    box-shadow: var(--glow-cyan);
+    transform: scale(1.1);
+  }
+  
+  .product__select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--color-cosmic-cyan);
+    border-radius: var(--border-radius);
+    color: var(--color-white);
+    font-family: var(--font-body-family);
+    cursor: pointer;
+  }
+  
+  .product__select:focus {
+    outline: none;
+    border-color: var(--color-cosmic-magenta);
+    box-shadow: var(--glow-magenta);
+  }
+  
+  .product__quantity {
+    margin-bottom: 2rem;
+  }
+  
+  .product__quantity-label {
+    display: block;
+    color: var(--color-white);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .quantity-selector {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--color-cosmic-cyan);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    width: fit-content;
+  }
+  
+  .quantity__button {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-cosmic-cyan);
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .quantity__button:hover {
+    background: var(--color-cosmic-cyan);
+    color: var(--color-deep-space);
+  }
+  
+  .quantity__input {
+    width: 60px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: var(--color-white);
+    text-align: center;
+    font-family: var(--font-body-family);
+  }
+  
+  .quantity__input:focus {
+    outline: none;
+  }
+  
+  .product__buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .btn--large {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+  }
+  
+  .product__meta {
+    border-top: 1px solid rgba(0, 255, 255, 0.3);
+    padding-top: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .product__meta-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .product__meta-label {
+    color: var(--color-gray);
+    font-weight: 500;
+    min-width: 80px;
+  }
+  
+  .product__meta-value {
+    color: var(--color-white);
+  }
+  
+  .product__tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  
+  .product__tag {
+    background: rgba(0, 255, 255, 0.2);
+    color: var(--color-cosmic-cyan);
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+  }
+  
+  .product__share {
+    border-top: 1px solid rgba(0, 255, 255, 0.3);
+    padding-top: 2rem;
+  }
+  
+  .product__share-label {
+    display: block;
+    color: var(--color-white);
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+  
+  .product__share-buttons {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .product__share-button {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--color-cosmic-cyan);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--color-cosmic-cyan);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all var(--transition-speed) ease;
+    cursor: pointer;
+  }
+  
+  .product__share-button:hover {
+    background: var(--color-cosmic-cyan);
+    color: var(--color-deep-space);
+    transform: scale(1.1);
+  }
+  
+  .product__details {
+    border-top: 1px solid rgba(0, 255, 255, 0.3);
+    padding-top: 4rem;
+    margin-bottom: 4rem;
+  }
+  
+  .product__tab {
+    border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+  }
+  
+  .product__tab-button {
+    width: 100%;
+    padding: 1.5rem 0;
+    background: none;
+    border: none;
+    color: var(--color-white);
+    font-family: var(--font-heading-family);
+    font-size: 1.125rem;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: color var(--transition-speed) ease;
+    position: relative;
+  }
+  
+  .product__tab-button::after {
+    content: '+';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform var(--transition-speed) ease;
+  }
+  
+  .product__tab-button--active::after {
+    transform: translateY(-50%) rotate(45deg);
+  }
+  
+  .product__tab-button:hover,
+  .product__tab-button--active {
+    color: var(--color-cosmic-cyan);
+  }
+  
+  .product__tab-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height var(--transition-speed) ease;
+  }
+  
+  .product__tab-content--active {
+    max-height: 1000px;
+    padding-bottom: 1.5rem;
+  }
+  
+  .size-guide__table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  
+  .size-guide__table th,
+  .size-guide__table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+  }
+  
+  .size-guide__table th {
+    color: var(--color-cosmic-cyan);
+    font-weight: 600;
+  }
+  
+  .size-guide__table td {
+    color: var(--color-white);
+  }
+  
+  .shipping-info h3 {
+    color: var(--color-cosmic-cyan);
+    margin-bottom: 1rem;
+  }
+  
+  .shipping-info ul {
+    list-style: none;
+    margin-bottom: 2rem;
+  }
+  
+  .shipping-info li {
+    color: var(--color-gray);
+    margin-bottom: 0.5rem;
+    position: relative;
+    padding-left: 1.5rem;
+  }
+  
+  .shipping-info li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--color-cosmic-cyan);
+  }
+  
+  .related-products {
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid rgba(0, 255, 255, 0.3);
+  }
+  
+  .related-products__grid {
+    margin-top: 2rem;
+  }
+  
+  @media (max-width: 768px) {
+    .product {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    
+    .product__thumbnails {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .product__price {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    
+    .product__buttons {
+      position: sticky;
+      bottom: 0;
+      background: var(--color-deep-space);
+      padding: 1rem;
+      margin: 0 -1rem -1rem;
+      border-top: 1px solid rgba(0, 255, 255, 0.3);
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const product = JSON.parse(document.getElementById('ProductJson').textContent);
+    const variants = JSON.parse(document.getElementById('ProductVariants').textContent);
+    
+    // Image switching
+    document.querySelectorAll('.product__thumbnail').forEach(thumbnail => {
+      thumbnail.addEventListener('click', function() {
+        const mainImage = document.getElementById('ProductMainImage');
+        const imageSrc = this.dataset.imageSrc;
+        const imageAlt = this.dataset.imageAlt;
+        
+        if (mainImage && imageSrc) {
+          mainImage.src = imageSrc;
+          mainImage.alt = imageAlt;
+        }
+        
+        // Update active thumbnail
+        document.querySelectorAll('.product__thumbnail').forEach(t => t.classList.remove('product__thumbnail--active'));
+        this.classList.add('product__thumbnail--active');
+      });
+    });
+    
+    // Color variant image switching
+    document.querySelectorAll('.product__color-label').forEach(colorLabel => {
+      colorLabel.addEventListener('click', function() {
+        const variantImage = this.dataset.variantImage;
+        const mainImage = document.getElementById('ProductMainImage');
+        
+        if (variantImage && mainImage) {
+          mainImage.src = variantImage;
+        }
+      });
+    });
+    
+    // Tab functionality
+    document.querySelectorAll('.product__tab-button').forEach(button => {
+      button.addEventListener('click', function() {
+        const tabId = this.dataset.tab;
+        const tabContent = document.getElementById('tab-' + tabId);
+        
+        // Close all tabs
+        document.querySelectorAll('.product__tab-button').forEach(b => b.classList.remove('product__tab-button--active'));
+        document.querySelectorAll('.product__tab-content').forEach(c => c.classList.remove('product__tab-content--active'));
+        
+        // Open clicked tab
+        this.classList.add('product__tab-button--active');
+        if (tabContent) {
+          tabContent.classList.add('product__tab-content--active');
+        }
+      });
+    });
+    
+    // Variant selection and price updates
+    function updateVariant() {
+      const selectedOptions = [];
+      document.querySelectorAll('[name^="options"]').forEach(option => {
+        if (option.type === 'radio') {
+          if (option.checked) {
+            selectedOptions.push(option.value);
+          }
+        } else {
+          selectedOptions.push(option.value);
+        }
+      });
+      
+      const selectedVariant = variants.find(variant => {
+        return variant.options.every((option, index) => option === selectedOptions[index]);
+      });
+      
+      if (selectedVariant) {
+        // Update price
+        const priceElement = document.querySelector('.product__price--current');
+        if (priceElement) {
+          priceElement.textContent = window.Shopify.formatMoney(selectedVariant.price, window.moneyFormat || '${{amount}}');
+        }
+        
+        // Update SKU
+        const skuElement = document.getElementById('ProductSku');
+        if (skuElement) {
+          skuElement.textContent = selectedVariant.sku || '';
+        }
+        
+        // Update variant ID
+        const variantIdInput = document.getElementById('ProductVariantId');
+        if (variantIdInput) {
+          variantIdInput.value = selectedVariant.id;
+        }
+        
+        // Update availability
+        const addToCartButton = document.querySelector('.product__add-to-cart');
+        if (addToCartButton) {
+          if (selectedVariant.available) {
+            addToCartButton.disabled = false;
+            addToCartButton.querySelector('.btn__text').textContent = 'Add to Cosmic Cart';
+          } else {
+            addToCartButton.disabled = true;
+            addToCartButton.querySelector('.btn__text').textContent = 'Sold Out';
+          }
+        }
+      }
+    }
+    
+    // Listen for variant changes
+    document.querySelectorAll('[name^="options"]').forEach(option => {
+      option.addEventListener('change', updateVariant);
+    });
+    
+    // Initialize with first variant
+    updateVariant();
+  });
+</script>
+

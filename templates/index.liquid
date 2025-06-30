@@ -1,0 +1,30 @@
+{% comment %}
+  Stellar Reverb - Homepage Template
+  Cosmic streetwear brand homepage with transmission showcase
+{% endcomment %}
+
+<div class="homepage">
+  {% section 'hero' %}
+  {% section 'transmission-grid' %}
+  {% section 'cosmic-mythology' %}
+  {% section 'email-capture' %}
+</div>
+
+{% schema %}
+{
+  "name": "Homepage",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Homepage Layout"
+    },
+    {
+      "type": "text",
+      "id": "page_title",
+      "label": "Page title",
+      "default": "Stellar Reverb - Cosmic Streetwear Transmissions"
+    }
+  ]
+}
+{% endschema %}
+

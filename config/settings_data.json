@@ -1,0 +1,44 @@
+{
+  "current": {
+    "enable_cosmic_particles": true,
+    "enable_star_field": true,
+    "enable_nebula_effects": true,
+    "enable_scanlines": true,
+    "particle_count": 20,
+    "color_cosmic_cyan": "#00ffff",
+    "color_cosmic_magenta": "#ff00ff", 
+    "color_cosmic_purple": "#8a2be2",
+    "color_deep_space": "#000000",
+    "color_nebula": "#0f0524",
+    "enable_glitch_text": true,
+    "hero_title": "STELLAR REVERB",
+    "hero_description": "Explore transmissions from the edge of time, where sound becomes story and cosmic dreams manifest as wearable mythology.",
+    "hero_button_text": "Explore Transmissions",
+    "hero_button_link": "/collections/all",
+    "products_per_row_desktop": 4,
+    "products_per_row_mobile": 1,
+    "enable_product_hover_effects": true,
+    "cart_type": "drawer",
+    "enable_cart_cosmic_effects": true,
+    "reduce_motion_support": true,
+    "lazy_load_images": true,
+    "optimize_for_mobile": true,
+    "sections": {
+      "header": {
+        "type": "header",
+        "settings": {}
+      },
+      "footer": {
+        "type": "footer",
+        "settings": {}
+      }
+    },
+    "content_for_index": [
+      "hero",
+      "transmission-grid",
+      "cosmic-mythology",
+      "email-capture"
+    ]
+  }
+}
+
